@@ -1,1 +1,63 @@
 
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#101020">
+<title>Rohel Khan Music</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#101020;color:white;font-family:Arial,sans-serif}
+header{padding:24px 18px;background:linear-gradient(135deg,#402080,#101020)}
+h1{margin:0;color:#f5cf62;font-size:27px}
+header p{color:#ddd;margin-bottom:0}
+nav{display:flex;gap:10px;padding:14px;overflow:auto}
+button{border:0;border-radius:10px;padding:12px 16px;background:#292943;color:white;font-size:15px}
+button.active,.play{background:#e8bb43;color:#171323}
+main{padding:16px}
+h2{font-size:20px}
+.search{width:100%;padding:14px;border-radius:10px;border:1px solid #444;background:#202035;color:white;font-size:16px}
+.card{padding:16px;margin:12px 0;background:#202035;border:1px solid #35354c;border-radius:14px}
+.card h3{margin:0 0 8px}
+.card p{color:#bbb;font-size:14px}
+.play{font-weight:bold;cursor:pointer}
+footer{text-align:center;padding:25px;color:#999;font-size:13px}
+</style>
+</head>
+<body>
+<header>
+<h1>🎵 Rohel Khan</h1>
+<p>তোমার পছন্দের গান, তোমার মনের সুর ❤️</p>
+</header>
+<nav>
+<button class="active" onclick="showAll()">সব গান</button>
+<button onclick="filterSongs('বাংলা')">বাংলা</button>
+<button onclick="filterSongs('রোমান্টিক')">রোমান্টিক</button>
+<button onclick="filterSongs('লোকগীতি')">লোকগীতি</button>
+</nav>
+<main>
+<input class="search" id="search" placeholder="🔍 গানের নাম খুঁজুন..." oninput="render()">
+<h2>🎶 গানের সংগ্রহ</h2>
+<div id="songs"></div>
+</main>
+<footer>Made with ❤️ | Rohel Khan</footer>
+<script>
+const tracks=[
+{title:"আমার মনের মানুষ",type:"রোমান্টিক",desc:"ভালোবাসার বাংলা গান"},
+{title:"প্রিয়তমা",type:"বাংলা",desc:"মনের অনুভূতির গান"},
+{title:"ও কালাচান গলার মালা",type:"লোকগীতি",desc:"চাটগাঁইয়া লোকগীতি"}
+];
+let category="সব";
+function showAll(){category="সব";render()}
+function filterSongs(c){category=c;render()}
+function render(){
+const q=document.getElementById("search").value.toLowerCase();
+const list=tracks.filter(t=>(category==="সব"||t.type===category)&&(t.title.toLowerCase().includes(q)||t.type.toLowerCase().includes(q)));
+document.getElementById("songs").innerHTML=list.map(t=>`<div class="card"><h3>🎵 ${t.title}</h3><p>${t.type} • ${t.desc}</p><button class="play" onclick="alert('এই গানের অডিও এখনো যোগ করা হয়নি।')">▶ গান শুনুন</button></div>`).join("")||"<p>কোনো গান পাওয়া যায়নি।</p>";
+}
+render();
+</script>
+</body>
+</html>
+
