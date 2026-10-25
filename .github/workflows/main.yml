@@ -4,6 +4,9 @@ name: Build Rohel Khan APK
 on:
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -25,7 +28,6 @@ jobs:
         run: |
           mkdir -p app/src/main/assets
           mkdir -p app/src/main/java/com/rohelkhan/app
-
           cp index.html app/src/main/assets/index.html
 
           cat > settings.gradle <<'EOF'
@@ -49,9 +51,15 @@ jobs:
 
           echo "plugins { id 'com.android.application' version '8.6.1' }; android { namespace 'com.rohelkhan.app'; compileSdk 35; defaultConfig { applicationId 'com.rohelkhan.app'; minSdk 23; targetSdk 28; versionCode 1; versionName '1.0' } }" > app/build.gradle
 
+          cat > build.gradle <<'EOF'
+          plugins {
+              id 'com.android.application' version '8.6.1' apply false
+          }
+          EOF
+
           cat > app/src/main/AndroidManifest.xml <<'EOF'
           <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-              <application android:theme="@android:style/Theme.Material.Light.NoActionBar" android:label="Rohel Khan" android:usesCleartextTraffic="true">
+              <application android:theme="@android:style/Theme.Material.Light.NoActionBar" android:label="Rohel Khan">
                   <activity android:name=".MainActivity" android:exported="true">
                       <intent-filter>
                           <action android:name="android.intent.action.MAIN"/>
@@ -84,10 +92,12 @@ jobs:
           EOF
 
       - name: Build debug APK
-        run: |
-          gradle wrapper --gradle-version 8.7
-          chmod +x gradlew
-          ./gradlew assembleDebug
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.7'
+
+      - name: Assemble APK
+        run: gradle assembleDebug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
