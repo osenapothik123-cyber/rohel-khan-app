@@ -3,61 +3,151 @@
 <html lang="bn">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#101020">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Rohel Khan Music</title>
 <style>
 *{box-sizing:border-box}
-body{margin:0;background:#101020;color:white;font-family:Arial,sans-serif}
-header{padding:24px 18px;background:linear-gradient(135deg,#402080,#101020)}
-h1{margin:0;color:#f5cf62;font-size:27px}
-header p{color:#ddd;margin-bottom:0}
-nav{display:flex;gap:10px;padding:14px;overflow:auto}
-button{border:0;border-radius:10px;padding:12px 16px;background:#292943;color:white;font-size:15px}
-button.active,.play{background:#e8bb43;color:#171323}
-main{padding:16px}
-h2{font-size:20px}
-.search{width:100%;padding:14px;border-radius:10px;border:1px solid #444;background:#202035;color:white;font-size:16px}
-.card{padding:16px;margin:12px 0;background:#202035;border:1px solid #35354c;border-radius:14px}
-.card h3{margin:0 0 8px}
-.card p{color:#bbb;font-size:14px}
-.play{font-weight:bold;cursor:pointer}
-footer{text-align:center;padding:25px;color:#999;font-size:13px}
+body{margin:0;background:#10101b;color:#fff;font-family:Arial,sans-serif}
+header{padding:24px 18px;background:linear-gradient(135deg,#7819c7,#e12d83)}
+h1{margin:0;font-size:29px}
+header p{margin:8px 0 0}
+main{padding:16px;max-width:700px;margin:auto}
+input{width:100%;padding:13px;border-radius:12px;border:0;font-size:16px;margin-bottom:14px}
+.categories{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px}
+.categories button,.play{border:0;border-radius:20px;padding:10px 13px;background:#29293d;color:#fff}
+.categories button.active,.play{background:#c42cdb}
+.song{padding:15px;margin:10px 0;background:#1c1c2c;border-radius:14px}
+.song h3{margin:0 0 6px}
+.song p{color:#bbb;font-size:13px}
+.play{cursor:pointer}
+#playerBox{position:sticky;bottom:0;background:#202034;padding:16px;border-radius:14px;margin-top:20px}
+#audio{width:100%;margin-top:10px}
+.note{font-size:13px;color:#bbb;line-height:1.6}
 </style>
 </head>
 <body>
 <header>
-<h1>🎵 Rohel Khan</h1>
-<p>তোমার পছন্দের গান, তোমার মনের সুর ❤️</p>
+  <h1>🎵 Rohel Khan</h1>
+  <p>বাংলা • রোমান্টিক • চাটগাঁইয়া • রোহিঙ্গা</p>
 </header>
-<nav>
-<button class="active" onclick="showAll()">সব গান</button>
-<button onclick="filterSongs('বাংলা')">বাংলা</button>
-<button onclick="filterSongs('রোমান্টিক')">রোমান্টিক</button>
-<button onclick="filterSongs('লোকগীতি')">লোকগীতি</button>
-</nav>
 <main>
-<input class="search" id="search" placeholder="🔍 গানের নাম খুঁজুন..." oninput="render()">
-<h2>🎶 গানের সংগ্রহ</h2>
-<div id="songs"></div>
+  <input id="search" placeholder="গানের নাম খুঁজুন..." aria-label="গান খুঁজুন">
+  <div class="categories" id="categories">
+    <button class="active" data-cat="সব">সব গান</button>
+    <button data-cat="বাংলা">বাংলা</button>
+    <button data-cat="রোমান্টিক">রোমান্টিক</button>
+    <button data-cat="চাটগাঁইয়া">চাটগাঁইয়া</button>
+    <button data-cat="রোহিঙ্গা">রোহিঙ্গা</button>
+  </div>
+
+  <div id="songs"></div>
+
+  <section id="playerBox">
+    <strong id="nowPlaying">একটি গান বেছে নিন</strong>
+    <audio id="audio" controls preload="none"></audio>
+    <p id="status" class="note">গান চালাতে Play চাপুন।</p>
+  </section>
+  <p class="note">
+    অনলাইন গান চালাতে প্রতিটি গানের জন্য বৈধ সরাসরি MP3/অডিও URL যোগ করতে হবে।
+    খালি URL থাকা গান চালানো যাবে না।
+  </p>
 </main>
-<footer>Made with ❤️ | Rohel Khan</footer>
+
 <script>
-const tracks=[
-{title:"আমার মনের মানুষ",type:"রোমান্টিক",desc:"ভালোবাসার বাংলা গান"},
-{title:"প্রিয়তমা",type:"বাংলা",desc:"মনের অনুভূতির গান"},
-{title:"ও কালাচান গলার মালা",type:"লোকগীতি",desc:"চাটগাঁইয়া লোকগীতি"}
+/*
+  এখানে নিজের অনুমোদিত সরাসরি অডিও লিংক বসাও।
+  উদাহরণ:
+  {title:"গানের নাম",cat:"বাংলা",artist:"শিল্পীর নাম",
+   url:"https://your-authorized-host.example/song.mp3"}
+
+  নিচের খালি URL-গুলো ইচ্ছাকৃতভাবে রাখা হয়েছে।
+*/
+const songs = [
+  {title:"বাংলা গান ১",cat:"বাংলা",artist:"বাংলা গান",url:""},
+  {title:"রোমান্টিক গান ১",cat:"রোমান্টিক",artist:"রোমান্টিক গান",url:""},
+  {title:"চাটগাঁইয়া গান ১",cat:"চাটগাঁইয়া",artist:"চাটগাঁইয়া লোকগীতি",url:""},
+  {title:"রোহিঙ্গা গান ১",cat:"রোহিঙ্গা",artist:"রোহিঙ্গা গান",url:""}
 ];
-let category="সব";
-function showAll(){category="সব";render()}
-function filterSongs(c){category=c;render()}
+
+const list = document.getElementById("songs");
+const audio = document.getElementById("audio");
+const statusText = document.getElementById("status");
+const nowPlaying = document.getElementById("nowPlaying");
+let category = "সব";
+let currentUrl = "";
+
 function render(){
-const q=document.getElementById("search").value.toLowerCase();
-const list=tracks.filter(t=>(category==="সব"||t.type===category)&&(t.title.toLowerCase().includes(q)||t.type.toLowerCase().includes(q)));
-document.getElementById("songs").innerHTML=list.map(t=>`<div class="card"><h3>🎵 ${t.title}</h3><p>${t.type} • ${t.desc}</p><button class="play" onclick="alert('এই গানের অডিও এখনো যোগ করা হয়নি।')">▶ গান শুনুন</button></div>`).join("")||"<p>কোনো গান পাওয়া যায়নি।</p>";
+  const q = document.getElementById("search").value.toLowerCase().trim();
+  list.innerHTML = "";
+  const filtered = songs.filter(s =>
+    (category === "সব" || s.cat === category) &&
+    (s.title + " " + s.artist + " " + s.cat).toLowerCase().includes(q)
+  );
+
+  if(!filtered.length){
+    list.textContent = "কোনো গান পাওয়া যায়নি।";
+    return;
+  }
+
+  filtered.forEach(song => {
+    const card = document.createElement("article");
+    card.className = "song";
+
+    const title = document.createElement("h3");
+    title.textContent = "🎵 " + song.title;
+
+    const details = document.createElement("p");
+    details.textContent = song.cat + " • " + song.artist;
+
+    const button = document.createElement("button");
+    button.className = "play";
+    button.textContent = song.url ? "▶ Play" : "লিংক যোগ করুন";
+    button.addEventListener("click", () => playSong(song));
+
+    card.append(title, details, button);
+    list.appendChild(card);
+  });
 }
+
+function playSong(song){
+  if(!song.url){
+    statusText.textContent =
+      "এই গানের বৈধ সরাসরি অডিও URL এখনো যোগ করা হয়নি।";
+    return;
+  }
+
+  if(currentUrl !== song.url){
+    audio.src = song.url;
+    currentUrl = song.url;
+  }
+
+  nowPlaying.textContent = song.title;
+  statusText.textContent = "গান লোড হচ্ছে...";
+
+  audio.play().then(() => {
+    statusText.textContent = "গান চলছে 🎶";
+  }).catch(() => {
+    statusText.textContent =
+      "গান চালানো যায়নি। লিংক, ইন্টারনেট বা অডিও হোস্ট পরীক্ষা করুন।";
+  });
+}
+
+document.getElementById("search").addEventListener("input", render);
+document.querySelectorAll("#categories button").forEach(button => {
+  button.addEventListener("click", () => {
+    category = button.dataset.cat;
+    document.querySelectorAll("#categories button")
+      .forEach(b => b.classList.toggle("active", b === button));
+    render();
+  });
+});
+
+audio.addEventListener("error", () => {
+  statusText.textContent =
+    "অডিও লিংক কাজ করছে না। সরাসরি ও অনুমোদিত অডিও URL ব্যবহার করুন।";
+});
+
 render();
 </script>
 </body>
 </html>
-
